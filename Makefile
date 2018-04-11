@@ -25,11 +25,11 @@ OBJS        := $(patsubst %.c,%.o,$(wildcard *.c))
 
 library: $(OBJS)
 	@echo "Building $(LIBNAMEFULL) ...."
-	$(CXX) $(OBJS) $(CXXFLAGS) $(CFLAGS) -shared -Wl,-soname,lib$(LIBNAME).so -o $(LIBNAMEFULL)
+	$(CXX) $(OBJS) -shared -Wl,-soname,lib$(LIBNAME).so -o $(LIBNAMEFULL) -lvchostif -lvchiq_arm -lvcos
 
 %.o: %.c
 	@echo "Building $@ ...."
-	$(CXX) -c $<  $(CXXFLAGS) $(CFLAGS) -o $@
+	$(CXX) -c $<  $(CXXFLAGS) -I=/usr/include/interface/vmcs_host/linux $(CFLAGS) -o $@
 
 install: $(LIBNAMEFULL)
 	@echo "Installing files in $(DESTDIR) ..."
