@@ -43,13 +43,6 @@ dsError_t  dsSetDFC(int handle, dsVideoZoom_t dfc)
 	return ret;
 }
 
-dsError_t  dsGetDFC(int handle, dsVideoZoom_t *dfc)
-{
-	dsError_t ret = dsERR_NONE;
-
-	return ret;
-}
-
 dsError_t  dsVideoDeviceTerm()
 {
 	dsError_t ret = dsERR_NONE;

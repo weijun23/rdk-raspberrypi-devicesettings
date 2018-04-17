@@ -17,16 +17,10 @@
  * limitations under the License.
 */
 
-#include <stdio.h>
-#include <fcntl.h>
-#include <stdlib.h>
-
 #include "dsTypes.h"
 #include "dsError.h"
 #include "dsHost.h"
-static uint32_t version_num = 0x10000;
-#define FILE_SIZE 50
-#define SIZE 10
+
 dsError_t dsHostInit()
 {
     dsError_t ret = dsERR_NONE;
@@ -37,14 +31,14 @@ dsError_t dsHostInit()
 dsError_t dsSetHostPowerMode(int newPower)
 {
     dsError_t ret = dsERR_NONE;
-    /* Raspberry pi doesn't have anykind of power management It is either plugged in or not.*/
+
+    /* TODO: Standby Mode to be finished */
     return ret;
 }
 
 dsError_t dsGetHostPowerMode(int *currPower)
 {
     dsError_t ret = dsERR_NONE;
-    /* Raspberry pi doesn't have anykind of power management It is either plugged in or not.*/
     return ret;
 }
 
@@ -65,42 +59,22 @@ dsError_t dsSetPreferredSleepMode(dsSleepMode_t mode)
 dsError_t dsGetCPUTemperature(float *cpuTemperature)
 {
     dsError_t ret = dsERR_NONE;
-    char Temp_File[FILE_SIZE];
-    char temp_value[SIZE];
-    FILE *fp = NULL;
-    snprintf(Temp_File, FILE_SIZE, "/sys/class/thermal/thermal_zone0/temp");
-    fp = fopen(Temp_File, "r");
-    if (fread(temp_value, 1, SIZE, fp) <= 0) {
-        printf("Error reading cpu temp\n");
-        return ret;
-    }
-    *cpuTemperature = atof(temp_value)/1000;
-    printf("Cpu temperature %f", *cpuTemperature);
+
     return ret;
 }
 
 dsError_t dsGetVersion(uint32_t *versionNumber)
 {
-    printf("Entering into dsGetVersion\n");
-        dsError_t ret;
+    dsError_t ret = dsERR_NONE;
 
-        if(versionNumber != NULL)
-        {
-                printf("getting hal version in ds-hal\n");
-                *versionNumber = version_num;
-                return dsERR_NONE;
-        }
-        else ret = dsERR_INVALID_PARAM;
-        return ret;
+    return ret;
 }
 
 dsError_t dsSetVersion(uint32_t versionNumber)
 {
-   printf("Entering into dsGetVersion\n");
-        dsError_t ret = dsERR_NONE;
+    dsError_t ret = dsERR_NONE;
 
-   printf("setting hal version in ds-hal %x\n", versionNumber);
-   version_num = versionNumber;
+    return ret;
 }
 
 dsError_t dsHostTerm()

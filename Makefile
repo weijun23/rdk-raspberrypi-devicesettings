@@ -18,18 +18,18 @@
 ##########################################################################
 
 RM          := rm -rf
-CXXFLAGS    = -std=c++1y  -g -fPIC -D_REENTRANT -Wall -DALSA_AUDIO_MASTER_CONTROL_ENABLE 
+CXXFLAGS    = -std=c++1y  -g -fPIC -D_REENTRANT -Wall 
 LIBNAME     := ds-hal
 LIBNAMEFULL := lib$(LIBNAME).so
 OBJS        := $(patsubst %.c,%.o,$(wildcard *.c))
 
 library: $(OBJS)
 	@echo "Building $(LIBNAMEFULL) ...."
-	$(CXX) $(OBJS) -shared -Wl,-soname,lib$(LIBNAME).so -o $(LIBNAMEFULL) -lvchostif -lvchiq_arm -lvcos -lasound
+	$(CXX) $(OBJS) $(CXXFLAGS) $(CFLAGS) -shared -Wl,-soname,lib$(LIBNAME).so -o $(LIBNAMEFULL)
 
 %.o: %.c
 	@echo "Building $@ ...."
-	$(CXX) -c $<  $(CXXFLAGS)  -DALSA_AUDIO_MASTER_CONTROL_ENABLE -I=/usr/include/interface/vmcs_host/linux $(CFLAGS) -o $@
+	$(CXX) -c $<  $(CXXFLAGS) $(CFLAGS) -o $@
 
 install: $(LIBNAMEFULL)
 	@echo "Installing files in $(DESTDIR) ..."
