@@ -71,7 +71,7 @@ dsError_t  dsVideoPortInit()
 	_handles[dsVIDEOPORT_TYPE_BB][0].m_index = 0;
 	_handles[dsVIDEOPORT_TYPE_BB][0].m_isEnabled = false;
 
-	_resolution = kResolutions[kDefaultResIndex].sRes;
+	_resolution = kResolutions[kDefaultResIndex];
         rc = vchi_tv_init();
         if (rc != 0)
         {
@@ -382,10 +382,10 @@ dsError_t  dsGetResolution(int handle, dsVideoPortResolution_t *resolution)
 static const char* dsVideoGetResolution(uint32_t hdmiMode)
 { 
         const char *res_name = NULL;
-     size_t iCount = (sizeof(kResolutions) / sizeof(kResolutions[0]));
+     size_t iCount = (sizeof(resolutionMap) / sizeof(resolutionMap[0]));
      for (int i = 0; i < iCount; i++) {
-         if (kResolutions[i].mode == hdmiMode)
-         res_name = kResolutions[i].sRes.name;
+         if (resolutionMap[i].mode == hdmiMode)
+         res_name = resolutionMap[i].rdkRes;
      }    
     return res_name;
 }
@@ -393,11 +393,11 @@ static const char* dsVideoGetResolution(uint32_t hdmiMode)
 static uint32_t dsGetHdmiMode(dsVideoPortResolution_t *resolution)
 {
     uint32_t hdmi_mode = 0;
-    size_t iCount = (sizeof(kResolutions) / sizeof(kResolutions[0]));
+    size_t iCount = (sizeof(resolutionMap) / sizeof(resolutionMap[0]));
     for (int i = 0; i < iCount; i++) {
-        if (!strncmp(resolution->name, kResolutions[i].sRes.name,
-             strlen(kResolutions[i].sRes.name)))
-            hdmi_mode = kResolutions[i].mode;
+        if (!strncmp(resolution->name, resolutionMap[i].rdkRes,
+             strlen(resolution->name)))
+            hdmi_mode = resolutionMap[i].mode;
     }
     if (!hdmi_mode) {
         printf("Given resolution not found, setting default Resolution\n");

@@ -39,6 +39,7 @@ static unsigned int numSupportedResn = 0;
 static dsError_t dsQueryHdmiResolution();
 TV_SUPPORTED_MODE_T dsVideoPortgetVideoFormatFromInfo(dsVideoResolution_t res,
                                                        unsigned frameRate, bool interlaced);
+static dsVideoPortResolution_t* dsgetResolutionInfo(const char *res_name);
 
 typedef struct _VDISPHandle_t {
 	dsVideoPortType_t m_vType;
@@ -339,7 +340,7 @@ static dsError_t dsQueryHdmiResolution()
                   HdmiSupportedResolution=NULL;
     }
     numSupportedResn = 0;
-	size_t iCount = (sizeof(kResolutions) / sizeof(kResolutions[0]));
+    size_t iCount = (sizeof(resolutionMap) / sizeof(resolutionMap[0]));
     HdmiSupportedResolution=(dsVideoPortResolution_t*)malloc(sizeof(dsVideoPortResolution_t)*iCount);
     if(HdmiSupportedResolution)
     {
@@ -347,9 +348,10 @@ static dsError_t dsQueryHdmiResolution()
 		{
                         for ( size_t j = 0; j < num_of_modes; j++ )
                         {
-                            if (modeSupported[j].code == kResolutions[i].mode)
+                            if (modeSupported[j].code == resolutionMap[i].mode)
                             {
-				HdmiSupportedResolution[numSupportedResn] = kResolutions[i].sRes;
+                                dsVideoPortResolution_t *resolution = dsgetResolutionInfo(resolutionMap[i].rdkRes);
+                                memcpy(&HdmiSupportedResolution[numSupportedResn], resolution, sizeof(dsVideoPortResolution_t));
 				printf("Supported Resolution %s \r\n",HdmiSupportedResolution[numSupportedResn].name);
 				numSupportedResn++;
                             }
@@ -362,6 +364,17 @@ static dsError_t dsQueryHdmiResolution()
 return dsERR_NONE;
 }
 
+static dsVideoPortResolution_t* dsgetResolutionInfo(const char *res_name)
+{
+    size_t iCount = 0;
+    iCount = (sizeof(kResolutions) / sizeof(kResolutions[0]));
+    for (int i=0; i < iCount; i++) {
+        if (!strncmp(res_name, kResolutions[i].name, strlen(res_name))) {
+            return &kResolutions[i];
+        }
+    }
+    return NULL;
+}
 
 TV_SUPPORTED_MODE_T dsVideoPortgetVideoFormatFromInfo(dsVideoResolution_t res, unsigned frameRate, bool interlaced)
 {
