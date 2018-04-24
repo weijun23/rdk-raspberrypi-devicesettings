@@ -17,41 +17,18 @@
  * limitations under the License.
 */
 
-#include <stdlib.h>
-#include <stdio.h>
+#ifndef __DSHALUTILS_H
+#define __DSHALUTILS_H
+
+extern "C" {
+#include "interface/vmcs_host/vc_tvservice.h"
+}
 #include "dsTypes.h"
-#include "dsVideoDevice.h"
 
-dsError_t  dsVideoDeviceInit()
-{
-	dsError_t ret = dsERR_NONE;
-	return ret;
-}
+int vchi_tv_init();
 
-dsError_t  dsGetVideoDevice(int index, int *handle)
-{
-	dsError_t ret = dsERR_NONE;
+int vchi_tv_uninit();
 
-	*handle = 0;
-	return ret;
-}
+void fill_edid_struct(unsigned char *edid, dsDisplayEDID_t *display, int size);
 
-dsError_t  dsSetDFC(int handle, dsVideoZoom_t dfc)
-{
-	dsError_t ret = dsERR_NONE;
-
-	return ret;
-}
-
-dsError_t  dsGetDFC(int handle, dsVideoZoom_t *dfc)
-{
-	dsError_t ret = dsERR_NONE;
-
-	return ret;
-}
-
-dsError_t  dsVideoDeviceTerm()
-{
-	dsError_t ret = dsERR_NONE;
-	return ret;
-}
+#endif
