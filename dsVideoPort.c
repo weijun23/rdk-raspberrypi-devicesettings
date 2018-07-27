@@ -106,6 +106,26 @@ dsError_t  dsGetVideoPort(dsVideoPortType_t type, int index, int *handle)
 	}
 	return ret;
 }
+ /**
+ * @brief Enable/disable all video port.
+ *
+ * This function enables or disables the all video port.
+ *
+ * @param [in] enabled     Flag to control the video port state
+ *                         (@a true to enable, @a false to disable)
+ * @return Device Settings error code
+ * @retval dsERR_NONE If sucessfully dsEnableAllVideoPort api has been called using IARM support.
+ * @retval dsERR_GENERAL General failure.
+ */
+dsError_t  dsEnableAllVideoPort(bool enabled)
+{
+
+    /* We cannot enable all ports in raspberrypi  because by default other
+     * port will be disabled when we enable any videoport on rpi */
+        dsError_t ret = dsERR_NONE;
+        return ret;
+}
+
 
 /**
  * @brief Indicate whether a video port is enabled.
