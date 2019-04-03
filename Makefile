@@ -35,3 +35,7 @@ install: $(LIBNAMEFULL)
 	@echo "Installing files in $(DESTDIR) ..."
 	install -d $(DESTDIR)
 	install -m 0755 $< $(DESTDIR)
+.PHONY: clean
+clean:
+	$(RM) *.so
+	$(RM) *.o
