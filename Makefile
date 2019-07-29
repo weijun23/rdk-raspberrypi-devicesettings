@@ -35,6 +35,3 @@ install: $(LIBNAMEFULL)
 	@echo "Installing files in $(DESTDIR) ..."
 	install -d $(DESTDIR)
 	install -m 0755 $< $(DESTDIR)
-
-clean:
-	@rm -rf *.o $(LIBNAMEFULL)*
