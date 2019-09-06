@@ -19,10 +19,64 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <errno.h>
 #include "dsFPD.h"
+
+void setValue (int pin, int value);
+
+char fName [128] ;
+FILE *fd ;
+
+int LED_RED = 9;
+int LED_YELLOW = 10;
+int LED_GREEN = 11;
+
+void exportPins (int pin)
+{
+    if ((fd = fopen ("/sys/class/gpio/export", "w")) == NULL)
+    {
+        fprintf (stderr, "%d: Unable to open GPIO export interface: %s\n", pin, strerror (errno)) ;
+        exit (1) ;
+    }
+
+    fprintf (fd, "%d\n", pin) ;
+    fclose (fd) ;
+}
+
+void setDirection (int pin)
+{
+    sprintf (fName, "/sys/class/gpio/gpio%d/direction", pin) ;
+    if ((fd = fopen (fName, "w")) == NULL)
+    {
+        fprintf (stderr, "Unable to open GPIO direction interface for pin %d: %s\n", pin, strerror (errno)) ;
+        exit (1) ;
+    }
+    fprintf (fd, "out\n") ;
+    fclose (fd) ;
+}
+
+void setValue (int pin, int value)
+{
+    sprintf (fName, "/sys/class/gpio/gpio%d/value", pin) ;
+    if ((fd = fopen (fName, "w")) == NULL)
+    {
+        fprintf (stderr, "Unable to open GPIO direction interface for pin %d: %s\n", pin, strerror (errno)) ;
+        exit (1) ;
+    }
+    fprintf (fd, "%d\n", value) ;
+    fclose (fd) ;
+}
 
 dsError_t dsFPInit(void)
 {
+    exportPins (LED_RED);
+    exportPins (LED_YELLOW);
+    exportPins (LED_GREEN);
+
+    setDirection (LED_RED);
+    setDirection (LED_YELLOW);
+    setDirection (LED_GREEN);
     return dsERR_NONE;
 }
 
@@ -38,6 +92,17 @@ dsError_t dsSetFPBlink (dsFPDIndicator_t eIndicator, unsigned int uBlinkDuration
 
 dsError_t dsSetFPBrightness (dsFPDIndicator_t eIndicator, dsFPDBrightness_t eBrightness)
 {
+    int gpio_pin;
+
+    if (eIndicator == dsFPD_INDICATOR_POWER)
+        gpio_pin = LED_RED;
+    else if (eIndicator == dsFPD_INDICATOR_REMOTE)
+        gpio_pin = LED_YELLOW;
+    else if (eIndicator == dsFPD_INDICATOR_MESSAGE)
+        gpio_pin = LED_GREEN;
+
+    setValue (gpio_pin, eBrightness);
+
     return dsERR_NONE;
 }
 
