@@ -18,24 +18,34 @@
 ##########################################################################
 
 RM          := rm -rf
-CXXFLAGS    = -std=c++1y  -g -fPIC -D_REENTRANT -Wall -DALSA_AUDIO_MASTER_CONTROL_ENABLE 
+CXXFLAGS    = -std=c++1y  -g -fPIC -D_REENTRANT -Wall -DALSA_AUDIO_MASTER_CONTROL_ENABLE
 LIBNAME     := ds-hal
 LIBNAMEFULL := lib$(LIBNAME).so
 OBJS        := $(patsubst %.c,%.o,$(wildcard *.c))
+DSHAL_API_MAJOR_VERSION := '0'
+DSHAL_API_MINOR_VERSION := '0'
+VERSION     := $(DSHAL_API_MAJOR_VERSION).$(DSHAL_API_MINOR_VERSION)
+LIBSOM = $(LIBNAMEFULL).$(DSHAL_API_MAJOR_VERSION)
+LIBSOV = $(LIBNAMEFULL).$(VERSION)
 
-library: $(OBJS)
-	@echo "Building $(LIBNAMEFULL) ...."
-	$(CXX) $(OBJS) -shared -Wl,-soname,lib$(LIBNAME).so -o $(LIBNAMEFULL) -lvchostif -lvchiq_arm -lvcos -lasound
+
+$(LIBNAMEFULL): $(LIBSOV)
+	ln -sf $(LIBSOV) $(LIBNAMEFULL)
+	ln -sf $(LIBSOV) $(LIBSOM)
+
+$(LIBSOV): $(OBJS)
+	@echo "Building $(LIBSOV) ...."
+	$(CXX) $(OBJS) -shared -Wl,-soname,$(LIBSOM) -o $(LIBSOV) -lvchostif -lvchiq_arm -lvcos -lasound
 
 %.o: %.c
 	@echo "Building $@ ...."
 	$(CXX) -c $<  $(CXXFLAGS)  -DALSA_AUDIO_MASTER_CONTROL_ENABLE -I=/usr/include/interface/vmcs_host/linux $(CFLAGS) -o $@
 
-install: $(LIBNAMEFULL)
+install: $(LIBSOV)
 	@echo "Installing files in $(DESTDIR) ..."
 	install -d $(DESTDIR)
 	install -m 0755 $< $(DESTDIR)
 .PHONY: clean
 clean:
-	$(RM) *.so
+	$(RM) *.so*
 	$(RM) *.o
