@@ -415,9 +415,12 @@ static uint32_t dsGetHdmiMode(dsVideoPortResolution_t *resolution)
     uint32_t hdmi_mode = 0;
     size_t iCount = (sizeof(resolutionMap) / sizeof(resolutionMap[0]));
     for (int i = 0; i < iCount; i++) {
-        if (!strncmp(resolution->name, resolutionMap[i].rdkRes,
-             strlen(resolution->name)))
+        size_t length = strlen(resolution->name) > strlen(resolutionMap[i].rdkRes) ? strlen(resolution->name) : strlen(resolutionMap[i].rdkRes);
+        if (!strncmp(resolution->name, resolutionMap[i].rdkRes, length))
+        {
             hdmi_mode = resolutionMap[i].mode;
+            break;
+        }
     }
     if (!hdmi_mode) {
         printf("Given resolution not found, setting default Resolution\n");
