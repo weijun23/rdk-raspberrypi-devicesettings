@@ -33,6 +33,8 @@
 #define ALSA_ELEMENT_NAME "PCM"
 #endif
 
+#define MAX_LINEAR_DB_SCALE 24
+
 typedef struct _AOPHandle_t {
         dsAudioPortType_t m_vType;
         int m_index;
@@ -288,12 +290,12 @@ dsError_t dsGetAudioGain(int handle, float *gain)
         }
 
         if ( dsERR_NONE == ret ) {
-                double gain_value;
                 long value_got;
                 float db_value;
                 const char *s_card = ALSA_CARD_NAME;
                 const char *element_name = ALSA_ELEMENT_NAME;
-
+                long vol_min = 0, vol_max = 0;
+                double normalized= 0, min_norm = 0;
                 snd_mixer_elem_t *mixer_elem;
                 initAlsa(element_name,s_card,&mixer_elem);
                 if(mixer_elem == NULL) {
@@ -301,12 +303,28 @@ dsError_t dsGetAudioGain(int handle, float *gain)
                         return dsERR_GENERAL;
                 }
 
-                if(!snd_mixer_selem_get_playback_dB(mixer_elem, SND_MIXER_SCHN_FRONT_LEFT, &value_got)) {
-                        db_value = (float) value_got/100;
+                snd_mixer_selem_get_playback_dB_range(mixer_elem, &vol_min, &vol_max);
+                if(!snd_mixer_selem_get_playback_dB(mixer_elem, SND_MIXER_SCHN_FRONT_LEFT, &value_got))
+                {
+                    printf("dsGetAudioGain: Gain  in dB %.2f\n", value_got/100.0);
+                    if ((vol_max - vol_min) <= MAX_LINEAR_DB_SCALE * 100)
+                    {
+                      *gain = (value_got - vol_min) / (double)(vol_max - vol_min);
+                    }
+                    else
+                    {
+                        normalized = pow(10, (value_got - vol_max) / 6000.0);
+
+                        if (vol_min != SND_CTL_TLV_DB_GAIN_MUTE)
+                        {
+                          min_norm = pow(10, (vol_min - vol_max) / 6000.0);
+                          normalized = (normalized - min_norm) / (1 - min_norm);
+                        }
+                        *gain = (float)(((int)(100.0f * normalized + 0.5f))/1.0f);
+                        printf("dsGetAudioGain: Rounded Gain  in linear scale %.2f\n", *gain);
+                    }
                 }
 
-                gain_value = pow(10, (double) (db_value/20));
-                *gain = (float) gain_value;
         }
         return ret;
 #else
@@ -443,10 +461,10 @@ dsError_t dsSetAudioGain(int handle, float gain)
         }
 
         if ( dsERR_NONE == ret ) {
-                double db_value;
                 const char *s_card = ALSA_CARD_NAME;
                 const char *element_name = ALSA_ELEMENT_NAME;
-
+                bool enabled = false;
+                ret = dsERR_GENERAL;
                 snd_mixer_elem_t *mixer_elem;
                 initAlsa(element_name,s_card,&mixer_elem);
                 if(mixer_elem == NULL) {
@@ -454,19 +472,36 @@ dsError_t dsSetAudioGain(int handle, float gain)
                         return dsERR_GENERAL;
                 }
 
-                db_value = 20 * log10(gain);
 
-                if(db_value < dBmin) {
-                        db_value = dBmin;
+                dsIsAudioMute(handle, &enabled);
+                if (true == enabled)
+                {
+                    printf("dsSetAudioGain: Mute is enabled. \n");
+                    return ret;
                 }
-                if(db_value > dBmax) {
-                        db_value = dBmax;
+
+                long vol_min, vol_max;
+                double min_norm;
+                gain = gain / 100.0f;
+
+                snd_mixer_selem_get_playback_dB_range(mixer_elem, &vol_min, &vol_max);
+                if (vol_max - vol_min <= MAX_LINEAR_DB_SCALE * 100)
+                {
+                  long floatval = lrint(gain * (vol_max - vol_min)) + vol_min;
+                  snd_mixer_selem_set_playback_dB_all(mixer_elem, floatval, 0);
+                  ret = dsERR_NONE;
                 }
-                if(!snd_mixer_selem_set_playback_dB_all(mixer_elem, (long) db_value* 100, 0)) {
-                        ret = dsERR_NONE;
-                }
-                else {
-                        ret = dsERR_GENERAL;
+                else
+                {
+                    if (vol_min != SND_CTL_TLV_DB_GAIN_MUTE)
+                    {
+                        min_norm = pow(10, (vol_min - vol_max) / 6000.0);
+                        gain = gain * (1 - min_norm) + min_norm;
+                    }
+                    long floatval = lrint(6000.0 * log10(gain)) + vol_max;
+                    snd_mixer_selem_set_playback_dB_all(mixer_elem, floatval, 0);
+                    printf("dsSetAudioGain: Setting gain in dB: %.2f \n", floatval/100.0);
+                    ret = dsERR_NONE;
                 }
         }
 
