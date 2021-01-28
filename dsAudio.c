@@ -375,7 +375,7 @@ dsError_t dsGetAudioLevel(int handle, float *level)
         }
 
         if ( dsERR_NONE == ret ) {
-                long vol_value;
+                long vol_value, min, max;
                 const char *s_card = "default";
                 const char *element_name = ALSA_ELEMENT_NAME;
 
@@ -386,7 +386,8 @@ dsError_t dsGetAudioLevel(int handle, float *level)
                         return dsERR_GENERAL;
                 }
                 if(!snd_mixer_selem_get_playback_volume(mixer_elem, SND_MIXER_SCHN_FRONT_LEFT, &vol_value)) {
-                        *level = (float) vol_value/100;
+	                snd_mixer_selem_get_playback_volume_range(mixer_elem, &min, &max);
+                        *level = (float) vol_value * 100 / max;
                 }
 
         }
