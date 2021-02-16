@@ -20,10 +20,14 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "dsTypes.h"
 #include "dsError.h"
 #include "dsHost.h"
+extern "C" {
+#include "interface/vmcs_host/vc_vchi_gencmd.h"
+}
 static uint32_t version_num = 0x10000;
 #define FILE_SIZE 50
 #define SIZE 10
@@ -101,6 +105,68 @@ dsError_t dsSetVersion(uint32_t versionNumber)
 
    printf("setting hal version in ds-hal %x\n", versionNumber);
    version_num = versionNumber;
+}
+
+dsError_t dsGetFreeSystemGraphicsMemory(uint64_t* memory)
+{
+    char buffer[512];
+    dsError_t ret = dsERR_NONE;
+
+    buffer[0] = '\0';
+    printf("Entering into dsGetFreeSystemGraphicsMemory\n");
+
+    if (vc_gencmd(buffer, sizeof(buffer), "get_mem reloc") != 0 )
+    {
+        printf( "Failed to get free GPU memory\n");
+        return dsERR_GENERAL;
+    }
+
+    buffer[sizeof(buffer) - 1] = '\0';
+    /* Extract response after = */
+    char* equal = strchr(buffer, '=');
+    if (equal != nullptr) {
+        equal++;
+    }
+    else {
+        equal = buffer;
+    }
+
+    *memory = strtol(equal, (char **)NULL, 10);
+
+    printf( "Free GPU memory is %lld\n", *memory);
+
+    return dsERR_NONE;
+
+}
+
+dsError_t dsGetTotalSystemGraphicsMemory(uint64_t* memory)
+{
+    char buffer[512];
+    dsError_t ret = dsERR_NONE;
+
+    buffer[0] = '\0';
+    printf("Entering into dsGetTotalSystemGraphicsMemory\n");
+
+    if (vc_gencmd(buffer, sizeof(buffer), "get_mem reloc_total") != 0 )
+    {
+        printf( "Failed to get total GPU memory\n");
+        return dsERR_GENERAL;
+    }
+
+    buffer[sizeof(buffer) - 1] = '\0';
+    /* Extract response after = */
+    char* equal = strchr(buffer, '=');
+    if (equal != nullptr) {
+        equal++;
+    }
+    else {
+        equal = buffer;
+    }
+
+    *memory = strtol(equal, (char **)NULL, 10);
+
+    printf( "Total GPU memory is %lld\n", *memory);
+    return dsERR_NONE;
 }
 
 dsError_t dsHostTerm()

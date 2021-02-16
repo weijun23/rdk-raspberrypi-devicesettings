@@ -46,6 +46,8 @@ int vchi_tv_init()
 
         // Initialize the tvservice
         vc_vchi_tv_init( vchi_instance, &vchi_connection, 1 );
+        // Initialize the gencmd
+        vc_vchi_gencmd_init(vchi_instance, &vchi_connection, 1 );
         initialised = 1;
     }
     return res;
@@ -54,15 +56,15 @@ int vchi_tv_init()
 int vchi_tv_uninit()
 {
     int res = 0;
-     if (initialised)
-     {
-         // Stop the tvservice
-         vc_vchi_tv_stop();
-
+    if (initialised)
+    {
+        // Stop the tvservice
+        vc_vchi_tv_stop();
+        vc_gencmd_stop();
         // Disconnect the VCHI connection
         vchi_disconnect( vchi_instance );
         initialised = 0;
-     }
+    }
     return res;
 }
 

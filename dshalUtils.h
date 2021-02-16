@@ -22,6 +22,7 @@
 
 extern "C" {
 #include "interface/vmcs_host/vc_tvservice.h"
+#include "interface/vmcs_host/vc_vchi_gencmd.h"
 }
 #include "dsTypes.h"
 
