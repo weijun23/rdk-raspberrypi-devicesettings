@@ -106,10 +106,10 @@ static int8_t initAlsa(const char *selemname, const char *s_card, snd_mixer_elem
         snd_mixer_selem_id_set_name(sid, selemname);
 
         *element = snd_mixer_find_selem(smixer, sid);
-        if (!element) {
+        if (NULL == *element) {
                 printf("Unable to find simple control '%s',%i\n", snd_mixer_selem_id_get_name(sid), snd_mixer_selem_id_get_index(sid));
                 snd_mixer_close(smixer);
-                return -1;
+                ret = -1;
         }
 
         return ret;
@@ -140,8 +140,7 @@ static void dsGetdBRange()
         long min_dB_value, max_dB_value;
         const char *s_card = ALSA_CARD_NAME;
         const char *element_name = ALSA_ELEMENT_NAME;
-
-        snd_mixer_elem_t *mixer_elem;
+        snd_mixer_elem_t *mixer_elem = NULL;
         initAlsa(element_name,s_card,&mixer_elem);
         if(mixer_elem == NULL) {
                 printf("failed to initialize alsa!\n");
@@ -214,7 +213,7 @@ dsError_t dsIsAudioMute (int handle, bool *muted)
         }
 	const char *s_card = ALSA_CARD_NAME;
 	const char *element_name = ALSA_ELEMENT_NAME;
-	snd_mixer_elem_t *mixer_elem;
+        snd_mixer_elem_t *mixer_elem = NULL;
 	initAlsa(element_name,s_card,&mixer_elem);
         if(mixer_elem == NULL) {
                 printf("failed to initialize alsa!\n");
@@ -248,7 +247,7 @@ dsError_t dsSetAudioMute(int handle, bool mute)
         }
         const char *s_card = ALSA_CARD_NAME;
         const char *element_name = ALSA_ELEMENT_NAME;
-        snd_mixer_elem_t *mixer_elem;
+        snd_mixer_elem_t *mixer_elem = NULL;
         initAlsa(element_name,s_card,&mixer_elem);
         if(mixer_elem == NULL) {
                 printf("failed to initialize alsa!\n");
@@ -347,7 +346,7 @@ dsError_t dsGetAudioDB(int handle, float *db)
                 const char *s_card = ALSA_CARD_NAME;
                 const char *element_name = ALSA_ELEMENT_NAME;
 
-                snd_mixer_elem_t *mixer_elem;
+                snd_mixer_elem_t *mixer_elem = NULL;
                 initAlsa(element_name,s_card,&mixer_elem);
                 if(mixer_elem == NULL) {
                         printf("failed to initialize alsa!\n");
@@ -379,7 +378,7 @@ dsError_t dsGetAudioLevel(int handle, float *level)
                 const char *s_card = "default";
                 const char *element_name = ALSA_ELEMENT_NAME;
 
-                snd_mixer_elem_t *mixer_elem;
+                snd_mixer_elem_t *mixer_elem = NULL;
                 initAlsa(element_name,s_card,&mixer_elem);
                 if(mixer_elem == NULL) {
                         printf("failed to initialize alsa!\n");
@@ -525,7 +524,7 @@ dsError_t dsSetAudioDB(int handle, float db)
                 const char *s_card = ALSA_CARD_NAME;
                 const char *element_name = ALSA_ELEMENT_NAME;
 
-                snd_mixer_elem_t *mixer_elem;
+                snd_mixer_elem_t *mixer_elem = NULL;
                 initAlsa(element_name,s_card,&mixer_elem);
                 if(mixer_elem == NULL) {
                         printf("failed to initialize alsa!\n");
@@ -566,7 +565,7 @@ dsError_t dsSetAudioLevel(int handle, float level)
                 const char *s_card = ALSA_CARD_NAME;
                 const char *element_name = ALSA_ELEMENT_NAME;
 
-                snd_mixer_elem_t *mixer_elem;
+                snd_mixer_elem_t *mixer_elem = NULL;
                 initAlsa(element_name,s_card,&mixer_elem);
                 if(mixer_elem == NULL) {
                         printf("failed to initialize alsa!\n");
