@@ -134,7 +134,7 @@ dsError_t dsGetDisplay(dsVideoPortType_t m_vType, int index, int *handle)
     }
 
     if (ret == dsERR_NONE) {
-        *handle = (int)&_handles[m_vType][index];
+        *handle = (intptr_t)&_handles[m_vType][index];
 
     } else {
     }
