@@ -384,15 +384,20 @@ dsError_t  dsIsHDCPEnabled (int handle, bool* pContentProtected)
 dsError_t  dsGetResolution(int handle, dsVideoPortResolution_t *resolution)
 { 
 	dsError_t ret = dsERR_NONE;
-    const char *resolution_name = NULL;
-    VOPHandle_t *vopHandle = (VOPHandle_t *) handle;
-    TV_DISPLAY_STATE_T tvstate; 
+	const char *resolution_name = NULL;
+	VOPHandle_t *vopHandle = (VOPHandle_t *) handle;
+	TV_DISPLAY_STATE_T tvstate; 
+	uint32_t hdmi_mode;
 
     if (!isValidVopHandle(handle)) {
         return dsERR_INVALID_PARAM;
     }
     if( vc_tv_get_display_state( &tvstate ) == 0) {
         resolution_name = dsVideoGetResolution(tvstate.display.hdmi.mode);
+    }
+    if(resolution_name == NULL) {
+         hdmi_mode = dsGetHdmiMode(resolution);
+	 resolution_name = dsVideoGetResolution(hdmi_mode);
     }
     if (resolution_name) 
         strncpy(resolution->name, resolution_name, strlen(resolution_name)); 
