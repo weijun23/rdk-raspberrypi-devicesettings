@@ -101,7 +101,7 @@ dsError_t  dsGetVideoPort(dsVideoPortType_t type, int index, int *handle)
 		ret = dsERR_NONE;
 	}
 	if (ret == dsERR_NONE) {
-		*handle = (int)&_handles[type][index];
+		*handle = (intptr_t)&_handles[type][index];
 
 	}
 	return ret;
@@ -522,7 +522,7 @@ dsError_t  dsVideoPortTerm()
  */
 static bool isValidVopHandle(int m_handle) {
 	for (int i = 0; i < dsVIDEOPORT_TYPE_MAX; i++) {
-		if ((int)&_handles[i][0] == m_handle) {
+		if ((intptr_t)&_handles[i][0] == m_handle) {
 			return true;
 		}
 	}

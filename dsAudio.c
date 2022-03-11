@@ -59,7 +59,7 @@ bool dsIsValidHandle(unsigned int uHandle)
     size_t index ;
     bool retValue = false;
     for (index = 0; index < dsAUDIOPORT_TYPE_MAX; index++) {
-        if ((int)&_handles[index][0] == uHandle) {
+        if ((intptr_t)&_handles[index][0] == uHandle) {
             retValue = true;
             break;
         }
@@ -158,7 +158,7 @@ dsError_t  dsGetAudioPort(dsAudioPortType_t type, int index, int *handle)
         dsError_t ret = dsERR_NONE;
         if (dsAudioType_isValid(type))
         {
-                *handle = (int)&_handles[type][index];
+                *handle = (intptr_t)&_handles[type][index];
         }
         else
         {
