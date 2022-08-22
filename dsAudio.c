@@ -270,7 +270,13 @@ dsError_t dsSetAudioMute(int handle, bool mute)
 dsError_t  dsIsAudioPortEnabled(int handle, bool *enabled)
 {
     printf("Inside %s :%d\n",__FUNCTION__,__LINE__);
-    return dsIsAudioMute(handle, enabled);
+    dsError_t ret = dsERR_NONE;
+    bool audioEnabled = true;
+    ret = dsIsAudioMute(handle, &audioEnabled);
+    if (ret == dsERR_NONE) {
+                *enabled = !audioEnabled;
+    }
+    return ret;
 }
 
 dsError_t  dsEnableAudioPort(int handle, bool enabled)
