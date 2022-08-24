@@ -74,8 +74,8 @@ static void tvservice_callback( void *callback_data,
       }
       default:
       {
-         // Ignore all other reasons
-         printf( "Callback with reason %d", reason );
+         printf( "For Rpi - HDMI is attached by default" );
+         _halcallback((int)(hdmiHandle->m_nativeHandle),dsDISPLAY_EVENT_CONNECTED,&eventData);
          break;
       }
   }

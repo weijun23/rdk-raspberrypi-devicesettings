@@ -171,7 +171,7 @@ void fill_edid_struct(unsigned char *edidBytes, dsDisplayEDID_t *displayEdidInfo
     displayEdidInfo->productCode = edidBytes[0x0A] + (edidBytes[0x0B] << 8);
     displayEdidInfo->serialNumber = (edidBytes[0x0C] + (edidBytes[0x0D] << 8) + (edidBytes[0x0E] << 16)
                                       + (edidBytes[0x0F] << 24));
-    displayEdidInfo->hdmiDeviceType = false;
+    displayEdidInfo->hdmiDeviceType = true;  // This is true for Rpi
     time(&t);
     localtm = localtime(&t);
     if (edidBytes[0x10] < 55 || edidBytes[0x10] == 0xff) {
