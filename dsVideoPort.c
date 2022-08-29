@@ -38,8 +38,6 @@ static const char* dsVideoGetResolution(uint32_t mode);
 static uint32_t dsGetHdmiMode(dsVideoPortResolution_t *resolution);
 #define MAX_HDMI_MODE_ID (127)
 
-dsHDCPStatusCallback_t _halhdcpcallback = NULL;
-
 typedef struct _VOPHandle_t {
 	dsVideoPortType_t m_vType;
 	int m_index;
@@ -52,49 +50,6 @@ static VOPHandle_t _handles[dsVIDEOPORT_TYPE_MAX][2] = {
 
 static dsVideoPortResolution_t _resolution;
 
-static void tvservice_hdcp_callback( void *callback_data,
-                                uint32_t reason,
-                                uint32_t param1,
-                                uint32_t param2 )
-{
-    VOPHandle_t *hdmiHandle = (VOPHandle_t*)callback_data;
-    unsigned char  eventData=0;
-    switch ( reason )
-    {
-      case VC_HDMI_HDCP_AUTH:
-           _halhdcpcallback((int)(hdmiHandle->m_nativeHandle),dsHDCP_STATUS_AUTHENTICATED);
-           break;
-
-      case VC_HDMI_HDCP_UNAUTH:
-           _halhdcpcallback((int)(hdmiHandle->m_nativeHandle),dsHDCP_STATUS_UNAUTHENTICATED);
-           break;
-
-      default:
-      {
-           printf( "At bootup HDCP status is Authenticated for Rpi \n");
-           _halhdcpcallback((int)(hdmiHandle->m_nativeHandle),dsHDCP_STATUS_AUTHENTICATED);
-           break;
-      }
-    }
-}
-
-/**
- * @brief Register for a callback routine for HDCP Auth
- *
- * This function is used to register for a call back for HDCP Auth and unAuth events
- *
- * @param [in] handle   Handle for the video display
- * @param [out] *edid   The callback rouutine
- * @return dsError_t Error code.
- */
-
-dsError_t dsRegisterHdcpStatusCallback(int handle, dsHDCPStatusCallback_t cb)
-{
-        dsError_t ret = dsERR_NONE;
-        /* Register The call Back */
-        _halhdcpcallback = cb;
-        return ret;
-}
 
 dsError_t  dsVideoPortInit()
 {
@@ -115,11 +70,6 @@ dsError_t  dsVideoPortInit()
 	_handles[dsVIDEOPORT_TYPE_BB][0].m_nativeHandle = dsVIDEOPORT_TYPE_BB;
 	_handles[dsVIDEOPORT_TYPE_BB][0].m_index = 0;
 	_handles[dsVIDEOPORT_TYPE_BB][0].m_isEnabled = false;
-
-	/*
-	 *  Register callback for HDCP Auth
-	 */
-	vc_tv_register_callback( &tvservice_hdcp_callback, &_handles[dsVIDEOPORT_TYPE_HDMI][0] );
 
 	_resolution = kResolutions[kDefaultResIndex];
         rc = vchi_tv_init();
