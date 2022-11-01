@@ -40,7 +40,7 @@ $(LIBSOV): $(OBJS)
 
 %.o: %.c
 	@echo "Building $@ ...."
-	$(CXX) -c $<  $(CXXFLAGS)  -DALSA_AUDIO_MASTER_CONTROL_ENABLE -I=/usr/include/interface/vmcs_host/linux $(CFLAGS) -o $@
+	$(CXX) -c $<  $(CXXFLAGS)  -DALSA_AUDIO_MASTER_CONTROL_ENABLE -I=/usr/include/interface/vmcs_host/linux -I./ $(CFLAGS) -o $@
 
 install: $(LIBSOV)
 	@echo "Installing files in $(DESTDIR) ..."
