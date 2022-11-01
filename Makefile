@@ -35,7 +35,8 @@ $(LIBNAMEFULL): $(LIBSOV)
 
 $(LIBSOV): $(OBJS)
 	@echo "Building $(LIBSOV) ...."
-	$(CXX) $(OBJS) -shared -Wl,-soname,$(LIBSOM) -o $(LIBSOV) -lvchostif -lvchiq_arm -lvcos -lasound
+#	$(CXX) $(OBJS) -shared -Wl,-soname,$(LIBSOM) -o $(LIBSOV) -lvchostif -lvchiq_arm -lvcos -lasound
+	$(CXX) $(OBJS) -shared -Wl,-soname,$(LIBSOM) -o $(LIBSOV)
 
 %.o: %.c
 	@echo "Building $@ ...."
