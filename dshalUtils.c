@@ -26,6 +26,7 @@ VCHI_CONNECTION_T *vchi_connection;
 
 int vchi_tv_init()
 {
+#if 0
     int res = 0;
     if (!initialised)
     {
@@ -51,10 +52,13 @@ int vchi_tv_init()
         initialised = 1;
     }
     return res;
+#endif
+    return 0;
 }
 
 int vchi_tv_uninit()
 {
+#if 0
     int res = 0;
     if (initialised)
     {
@@ -66,6 +70,8 @@ int vchi_tv_uninit()
         initialised = 0;
     }
     return res;
+#endif
+    return 0;
 }
 
 static char * extract_string(unsigned char *x, int *valid_termination, int len)

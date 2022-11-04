@@ -119,7 +119,7 @@ dsError_t  dsVideoPortInit()
 	/*
 	 *  Register callback for HDCP Auth
 	 */
-	vc_tv_register_callback( &tvservice_hdcp_callback, &_handles[dsVIDEOPORT_TYPE_HDMI][0] );
+	//vc_tv_register_callback( &tvservice_hdcp_callback, &_handles[dsVIDEOPORT_TYPE_HDMI][0] );
 
 	_resolution = kResolutions[kDefaultResIndex];
         rc = vchi_tv_init();
@@ -653,10 +653,15 @@ dsError_t dsSupportedTvResolutions(int handle, int *resolutions)
         uint32_t mode;
         int num_of_modes;
         int i;
+#if 0
         num_of_modes = vc_tv_hdmi_get_supported_modes_new( HDMI_RES_GROUP_CEA, modeSupported,
                                                    vcos_countof(modeSupported),
                                                    &group,
                                                    &mode );
+#else
+	num_of_modes = 1;
+	modeSupported[0].code = HDMI_CEA_1080i50;
+#endif
         if ( num_of_modes < 0 )
         {
            printf( "Failed to get modes" );
